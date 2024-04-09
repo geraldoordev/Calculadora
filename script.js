@@ -12,7 +12,10 @@ class Calculadora {
             DIV: 1,
             MULT: 2,
             SUB: 3,
-            SUM: 4
+            SUM: 4,
+            RAIZ: 5,
+            PORCEN: 6,
+            INVERSO: 7
         };
         this.opAtual = this.op.NOP;
     }
@@ -66,6 +69,15 @@ class Calculadora {
             case '/':
                 this.opAtual = this.op.DIV;
                 break;
+            case 'Raiz':
+                this.opAtual = this.op.RAIZ;
+                break;
+            case '%':
+                this.opAtual = this.op.PORCEN;
+                break;
+            case '1/x':
+                this.opAtual = this.op.INVERSO;
+                break;
         }
         this.memTemp = this.nrVisor;
     }
@@ -94,6 +106,20 @@ class Calculadora {
             case this.op.SUM:
                 resultado = num1 + num2;
                 break;
+            case this.op.RAIZ: // Adicionando o caso para raiz quadrada
+                if (num2 < 0) {
+                    this.estadoErro = true;
+                    return;
+                }
+                resultado = Math.sqrt(num2);
+                break;
+            case this.op.PORCEN:
+                resultado = (num1 * num2) / 100;
+                break;
+            case this.op.INVERSO: // Adicionando o caso para o inverso
+                resultado = 1 / num2;
+                break;
+
         }
         this.opAtual = this.op.NOP;
         this.iniciouSegundo = false;
