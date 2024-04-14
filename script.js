@@ -15,7 +15,9 @@ class Calculadora {
             SUM: 4,
             RAIZ: 5,
             PORCEN: 6,
-            INVERSO: 7
+            INVERSO: 7,
+            FATORIAL: 8,
+            AOQUADRADO: 9
         };
         this.opAtual = this.op.NOP;
     }
@@ -78,6 +80,12 @@ class Calculadora {
             case '1/x':
                 this.opAtual = this.op.INVERSO;
                 break;
+            case '!':
+            this.opAtual = this.op.FATORIAL;
+                break;
+            case'^':
+            this.opAtual = this.op.AOQUADRADO;
+            break;
         }
         this.memTemp = this.nrVisor;
     }
@@ -119,7 +127,15 @@ class Calculadora {
             case this.op.INVERSO: // Adicionando o caso para o inverso
                 resultado = 1 / num2;
                 break;
-
+            case this.op.FATORIAL ://ADICIONA O FATORIAL 
+                resultado = 1;
+                for (let i = 2; i <= num2; i++) {
+                    resultado *= i;
+                }
+                break;
+            case this.op.AOQUADRADO: //ADICIONA O NUMERO AO QUADRADO
+            resultado = num2 * num2;
+            break;  
         }
         this.opAtual = this.op.NOP;
         this.iniciouSegundo = false;
@@ -226,4 +242,3 @@ let teclaCLM = () => {
 // ========================================================
 
 let calculadora = new Calculadora();
-
