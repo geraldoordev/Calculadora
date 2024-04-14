@@ -15,14 +15,16 @@ class Calculadora {
             SUM: 4,
             RAIZ: 5,
             PORCEN: 6,
-            INVERSO: 7,
-            FATORIAL: 8,
-            AOQUADRADO: 9
+            INVERSO : 7 ,
+            FATORIAL : 8 ,
+            AOQUADRADO : 9
         };
         this.opAtual = this.op.NOP;
+        this.ligado = true; // Adicionando variável de estado para ligado/desligado
     }
 
     mostrarVisor() {
+        if (!this.ligado) return 'Desligado'; // Exibir "Desligado" se a calculadora estiver desligada
         if (this.estadoErro) {
             this.nrVisor = '0';
             return 'ERRO!';
@@ -35,7 +37,7 @@ class Calculadora {
 
     // recebe dígito
     digito(dig) {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         if (dig.length != 1) return;
         if ((dig < '0' || dig > '9') && dig != '.') return;
         if (!this.iniciouSegundo && this.opAtual != this.op.NOP) {
@@ -57,7 +59,7 @@ class Calculadora {
 
     // Definir qual a operação atual
     defineOperacao(op) {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         switch (op) {
             case '+':
                 this.opAtual = this.op.SUM;
@@ -81,18 +83,19 @@ class Calculadora {
                 this.opAtual = this.op.INVERSO;
                 break;
             case '!':
-            this.opAtual = this.op.FATORIAL;
+                this.opAtual = this.op.FATORIAL;
                 break;
             case'^':
-            this.opAtual = this.op.AOQUADRADO;
-            break;
-        }
+                this.opAtual = this.op.AOQUADRADO;
+                break;
+                }
         this.memTemp = this.nrVisor;
     }
+    
 
     // Executa operação: tecla IGUAL
     igual() {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         if (this.opAtual == this.op.NOP) return;
         let num1 = parseFloat(this.memTemp);
         let num2 = parseFloat(this.nrVisor);
@@ -134,8 +137,8 @@ class Calculadora {
                 }
                 break;
             case this.op.AOQUADRADO: //ADICIONA O NUMERO AO QUADRADO
-            resultado = num2 * num2;
-            break;  
+                resultado = num2 * num2;
+                break;  
         }
         this.opAtual = this.op.NOP;
         this.iniciouSegundo = false;
@@ -146,6 +149,7 @@ class Calculadora {
 
     // Limpa dados (exceto memória)
     teclaC() {
+        if (!this.ligado) return; // Não permitir operações se a calculadora estiver desligada
         this.nrVisor = '0';
         this.ptDecimal = false;
         this.iniciouSegundo = false;
@@ -156,28 +160,64 @@ class Calculadora {
 
     // tecla M+ : acrescenta à memória o número no visor
     teclaMmais() {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         this.memoria += parseFloat(this.nrVisor);
     }
 
     // tecla M- : subtrai da memória o número no visor
     teclaMmenos() {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         this.memoria -= parseFloat(this.nrVisor);
     }
 
     // tecla RM : recupera o conteúdo da memória -> coloca no visor
     teclaRM() {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         this.nrVisor = String(this.memoria);
     }
 
     // tecla CLM : limpa totalmente o conteúdo da memória -> atribui 0
     teclaCLM() {
-        if (this.estadoErro) return;
+        if (!this.ligado || this.estadoErro) return;
         this.memoria = 0;
     }
+    teclaPi() {
+        if (!this.ligado || this.estadoErro) return;
+        this.nrVisor = Math.PI.toFixed(10); // Ajusta o número de casas decimais para 10
+        this.ptDecimal = true;
+        this.iniciouSegundo = false; // Marca como iniciado o segundo número para evitar concatenar ao valor de π
+         // Permite adicionar casas decimais após π
+    }
+    teclaAOQUADRADO() {
+        if (!this.ligado || this.estadoErro) return;
+        let num = parseFloat(this.nrVisor);
+        let resultado = num * num;
+        this.nrVisor = String(resultado).slice(0, 10);
+    }
+    
+    // Limpa todos os dados da calculadora
+    limparDados() {
+        this.nrVisor = '0';
+        this.ptDecimal = false;
+        this.iniciouSegundo = false;
+        this.memTemp = '';
+        this.estadoErro = false;
+        this.memoria = 0;
+        this.opAtual = this.op.NOP;
+    }
+    // Alterna entre ligado e desligado
+    ligarDesligar() {
+    this.ligado = !this.ligado;
+        if (!this.ligado) {
+            this.limparDados(); // Limpa todos os dados quando a calculadora for desligada
+        }
+        document.getElementById('visor-id').innerHTML = this.mostrarVisor();
+    }
+}
 
+// Função para ligar/desligar a calculadora
+let ligarDesligar = () => {
+    calculadora.ligarDesligar();
 }
 
 // ==================================================================
@@ -236,9 +276,19 @@ let teclaRM = () => {
 let teclaCLM = () => {
     calculadora.teclaCLM();
 }
+let teclaPi = () => {
+    calculadora.teclaPi();
+    atualizaVisor();
+}
+let teclaAOQUADRADO = () =>{
+    calculadora.teclaAOQUADRADO();
+    atualizaVisor;
+}
+
 
 // ========================================================
 //  INÍCIO DO PROCESSAMENTO
 // ========================================================
 
 let calculadora = new Calculadora();
+
